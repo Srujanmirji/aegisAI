@@ -828,11 +828,12 @@ function frame(){
     const cy = agentContainer.offsetHeight / 2;
     const isMobile = window.innerWidth <= 768;
     const radius = isMobile ? 120 : 160;
+    const halfWidth = isMobile ? 45 : 50; // Mobile circle is 90px, desktop is 100px
 
     circles.forEach((circle, i) => {
       const angle = agentAngle + i * (Math.PI * 2 / 6);
-      const x = cx + Math.cos(angle) * radius - 50; // 50 is half of 100px circle width
-      const y = cy + Math.sin(angle) * radius - 50;
+      const x = cx + Math.cos(angle) * radius - halfWidth;
+      const y = cy + Math.sin(angle) * radius - halfWidth;
       circle.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     });
   }
@@ -846,13 +847,14 @@ function frame(){
     const isMobile = window.innerWidth <= 768;
     const rOuter = isMobile ? 150 : 210;
     const rInner = isMobile ? 90 : 130;
+    const halfWidth = isMobile ? 30 : 38; // Mobile tech icon is 60px, desktop is 76px
 
     icons.forEach((icon, i) => {
       const isOuter = i % 2 === 0;
       const radius = isOuter ? rOuter : rInner;
       const angle = techAngle + (i / icons.length) * Math.PI * 2;
-      const x = cx + Math.cos(angle) * radius - 38;
-      const y = cy + Math.sin(angle) * radius - 38;
+      const x = cx + Math.cos(angle) * radius - halfWidth;
+      const y = cy + Math.sin(angle) * radius - halfWidth;
       icon.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     });
   }
@@ -1440,10 +1442,9 @@ function initFutureVision() {
   if (nodes.length === 0 || !container) return;
 
   function layoutFutureNodes() {
-    const rect = container.getBoundingClientRect();
     const isMobile = window.innerWidth <= 768;
-    const cx = rect.width / 2;
-    const cy = rect.height / 2;
+    const cx = container.offsetWidth / 2;
+    const cy = container.offsetHeight / 2;
     const radius = isMobile ? 120 : 220;
 
     nodes.forEach((node, i) => {

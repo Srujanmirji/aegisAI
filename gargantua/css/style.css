@@ -1468,14 +1468,15 @@ body.ready #intro{
     font-size: 8px;
   }
   .agent-info-card {
-    left: 50%;
-    top: auto;
-    bottom: 20px;
-    width: calc(100% - 40px);
-    transform: translateX(-50%) translateY(20px);
+    position: relative;
+    left: 0;
+    bottom: auto;
+    width: 100%;
+    transform: none;
+    margin-top: 30px;
   }
   .agent-info-card.active {
-    transform: translateX(-50%) translateY(0);
+    transform: none;
   }
 }
 
