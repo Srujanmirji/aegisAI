@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://aegisai.vercel.app/sitemap.xml
+Sitemap: https://aegis-ai-bay.vercel.app/sitemap.xml
