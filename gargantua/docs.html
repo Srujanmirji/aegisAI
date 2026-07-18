@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AegisAI — System Documentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #F59E0B;
+      --accent: #F97316;
+      --aegis-white: #FFFFFF;
+      --aegis-gray: #CBD5E1;
+      --bg-dark: #070913;
+      --font-sans: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--aegis-white);
+      font-family: var(--font-sans);
+      margin: 0;
+      padding: 0;
+      line-height: 1.7;
+      overflow-x: hidden;
+      background-image: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 20% 80%, rgba(234, 88, 12, 0.05) 0%, transparent 50%);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 40px;
+      transition: color 0.3s, transform 0.3s;
+    }
+
+    .btn-back:hover {
+      color: var(--accent);
+      transform: translateX(-4px);
+    }
+
+    h1 {
+      font-size: clamp(36px, 6vw, 56px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      margin: 0 0 20px 0;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .kicker {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .desc {
+      font-size: 18px;
+      color: var(--aegis-gray);
+      margin-bottom: 60px;
+    }
+
+    .doc-section {
+      background: rgba(7, 9, 19, 0.85);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 40px;
+      margin-bottom: 40px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 20px 0;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 30px 0 10px 0;
+      color: var(--aegis-white);
+    }
+
+    p {
+      color: var(--aegis-gray);
+      margin: 0 0 20px 0;
+      font-size: 15px;
+    }
+
+    ul {
+      margin: 0 0 20px 0;
+      padding-left: 20px;
+      color: var(--aegis-gray);
+      font-size: 15px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    code {
+      background: rgba(255, 255, 255, 0.06);
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: var(--primary);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="index.html" class="btn-back">← Back to AI Core</a>
+    
+    <div class="kicker">AEGISAI ARCHITECTURE</div>
+    <h1>System Documentation</h1>
+    <p class="desc">Technical specifications, API interfaces, and swarm orchestration models running on the AegisAI Core platform.</p>
+
+    <div class="doc-section">
+      <h2>1. Swarm Orchestration</h2>
+      <p>AegisAI coordinates six autonomous agents surrounding the relativistic Core to process operations, handle data vectorizations, and run predictive telemetry:</p>
+      <ul>
+        <li><strong>Planning Agent:</strong> Deconstructs operator queries and coordinates task assignments.</li>
+        <li><strong>Knowledge Agent:</strong> Automates vector databases retrievals and context extraction loops.</li>
+        <li><strong>Operations Agent:</strong> Executes real-time infrastructure actions and workflow tasks.</li>
+        <li><strong>Maintenance Agent:</strong> Tracks metrics anomalies and triggers self-healing cycles.</li>
+        <li><strong>Analytics Agent:</strong> Aggregates runtime data and performs telemetry diagnostics.</li>
+        <li><strong>Risk Agent:</strong> Enforces security policies, auditing every instruction.</li>
+      </ul>
+    </div>
+
+    <div class="doc-section">
+      <h2>2. Relativistic Core Engine</h2>
+      <p>The system core operates using null-geodesic mathematical calculations mapped to Null-Geodesics. In-browser rendering runs on optimized WebGL fragment shaders loaded dynamically via <code>js/shaders.js</code>.</p>
+      <h3>Core State Modulations</h3>
+      <p>As telemetry variables shift, uniform parameters change to reflect system loading:</p>
+      <ul>
+        <li><code>uDiskBright</code>: Disk glowing intensity reflects operational data transfer speeds.</li>
+        <li><code>uDout</code> / <code>uDin</code>: Orbit coordinates boundaries expand during task execution bursts.</li>
+      </ul>
+    </div>
+
+    <div class="doc-section">
+      <h2>3. Technical Specifications</h2>
+      <p>Our stack is optimized for low-latency workflow scheduling and deep-learning operations:</p>
+      <ul>
+        <li><strong>Orchestrator:</strong> LangGraph Python / LangChain</li>
+        <li><strong>Serving:</strong> FastAPI / Python 3.11</li>
+        <li><strong>Vector Storage:</strong> pgvector / Supabase Postgres</li>
+        <li><strong>Frontend Context:</strong> Three.js WebGL / GSAP ScrollTrigger</li>
+      </ul>
+    </div>
+  </div>
+
+</body>
+</html>
