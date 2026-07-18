@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:,">
+<title>AegisAI — Enterprise Multi-Agent Generative AI Copilot</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=8">
+<!-- Importmap for Three.js -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.module.js",
+    "three/addons/": "./vendor/jsm/"
+  }
+}
+</script>
+<!-- GSAP Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<!-- Lenis Smooth Scroll -->
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+</head>
+<body>
+
+<!-- Fullscreen WebGL Canvas -->
+<canvas id="view" aria-label="Real-time Schwarzschild black hole raytracer"></canvas>
+
+<!-- Post-processing Overlay effects (Scanlines, Vignette) -->
+<div id="fx" aria-hidden="true"></div>
+
+<!-- Custom Glowing Cursor -->
+<div id="custom-cursor" class="custom-cursor"></div>
+
+<!-- AegisAI Scrollable Application UI Overlay -->
+<div id="aegis-app">
+  <!-- Top Transparent Glass Navbar -->
+  <nav id="aegis-nav">
+    <div class="nav-container">
+      <a href="#" class="nav-logo">Aegis<span>AI</span></a>
+      <button class="nav-burger" id="aegis-burger" aria-label="Toggle navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-menu" id="aegis-nav-menu">
+        <a href="#" class="aegis-nav-link active">Home</a>
+        <a href="#problem" class="aegis-nav-link">Problem</a>
+        <a href="#architecture" class="aegis-nav-link">Architecture</a>
+        <a href="#features" class="aegis-nav-link">Features</a>
+        <a href="#impact" class="aegis-nav-link">Impact</a>
+        <a href="#future" class="aegis-nav-link">Future</a>
+      </div>
+      <div class="nav-actions">
+        <a href="https://github.com" target="_blank" class="btn btn-github">
+          <svg class="icon-github" viewBox="0 0 24 24" width="16" height="16" style="vertical-align: text-bottom; margin-right: 6px;"><path fill="currentColor" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="#" class="btn btn-demo">Try Demo</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="home">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">🏆 Tech Horizon 2.0</div>
+        
+        <h1 class="hero-title">
+          <div class="hero-title-clip"><span class="hero-title-line">Enterprise Multi-Agent</span></div>
+          <div class="hero-title-clip"><span class="hero-title-line gradient-text">Generative AI Copilot</span></div>
+        </h1>
+        
+        <h2 class="hero-subtitle">Transform Industrial Intelligence with Autonomous AI Agents</h2>
+        
+        <p class="hero-desc">
+          A next-generation AI platform powered by Multi-Agent Systems, Retrieval-Augmented Generation, and Predictive Intelligence to help enterprises automate decisions, reduce downtime, and unlock real-time operational insights.
+        </p>
+        
+        <div class="hero-btn-wrap">
+          <a href="#problem" class="btn btn-primary">Explore Solution</a>
+          <a href="#" class="btn btn-secondary">Watch Demo</a>
+        </div>
+      </div>
+      <!-- Right space intentionally empty to host the fullscreen black hole (AI Core) -->
+      <div class="hero-spacer"></div>
+    </div>
+    
+    <div class="scroll-indicator">
+      <span class="scroll-arrow">↓</span>
+      <span class="scroll-text">Scroll to explore AegisAI</span>
+    </div>
+  </section>
+
+  <!-- SECTION 2: Problem Statement -->
+  <section class="glass-section" id="problem">
+    <!-- SVG Connection Lines for Problem Cards -->
+    <svg class="svg-overlay" id="problem-svg"></svg>
+    
+    <div class="section-container">
+      <div class="section-kicker">01 // THE CHALLENGE</div>
+      <h2 class="section-heading">Industrial Operations Are<br>Still Stuck in the Past</h2>
+      
+      <div class="problem-layout">
+        <div class="problem-cards-container">
+          <div class="problem-card-wrapper left">
+            <div class="glass-card" id="problem-1">
+              <div class="card-icon">⚡</div>
+              <h3 class="card-title">Data Silos</h3>
+              <p class="card-desc">Critical industrial documents and real-time sensor logs are locked in fragmented legacy databases.</p>
+            </div>
+          </div>
+          <div class="problem-card-wrapper right">
+            <div class="glass-card" id="problem-2">
+              <div class="card-icon">⚠️</div>
+              <h3 class="card-title">Reactive Maintenance</h3>
+              <p class="card-desc">Operations only respond after critical failures occur, driving massive downtime and high emergency fees.</p>
+            </div>
+          </div>
+          <div class="problem-card-wrapper left">
+            <div class="glass-card" id="problem-3">
+              <div class="card-icon">📋</div>
+              <h3 class="card-title">Manual Reporting</h3>
+              <p class="card-desc">Operators spend hours writing physical status logs, leading to errors and delayed analysis.</p>
+            </div>
+          </div>
+          <div class="problem-card-wrapper right">
+            <div class="glass-card" id="problem-4">
+              <div class="card-icon">📉</div>
+              <h3 class="card-title">Knowledge Loss</h3>
+              <p class="card-desc">Decades of operational experience disappear forever as senior engineers retire without digital records.</p>
+            </div>
+          </div>
+          <div class="problem-card-wrapper left">
+            <div class="glass-card" id="problem-5">
+              <div class="card-icon">⏱️</div>
+              <h3 class="card-title">Slow Decision Making</h3>
+              <p class="card-desc">Gathering diagnostic context across plants takes days, stalling resolution loops and escalating costs.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: Our Solution -->
+  <section class="glass-section" id="architecture">
+    <div class="section-split">
+      <div class="split-left">
+        <div class="section-kicker">02 // THE PLATFORM</div>
+        <h2 class="section-heading">Meet AegisAI</h2>
+        <p class="section-paragraph">
+          An autonomous intelligence loop linking enterprise data repositories to real-time predictive actions. By coordinating multiple specialized subagents, AegisAI automates RAG retrieval, telemetry analysis, and workflow executions.
+        </p>
+      </div>
+      <div class="split-right">
+        <div class="diagram-container">
+          <!-- SVG Connections with particle streams -->
+          <svg class="diagram-svg" id="solution-diagram-svg"></svg>
+          
+          <div class="diagram-node" id="node-1">Enterprise Data</div>
+          <div class="diagram-node" id="node-2">Knowledge Retrieval</div>
+          <div class="diagram-node" id="node-3">LLM Core</div>
+          <div class="diagram-node" id="node-4">Multi-Agent System</div>
+          <div class="diagram-node" id="node-5">Recommendations</div>
+          <div class="diagram-node" id="node-6">Operator Dashboard</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: Multi-Agent Intelligence -->
+  <section class="glass-section" id="agents">
+    <div class="section-split">
+      <div class="split-left">
+        <div class="section-kicker">03 // COGNITIVE ORCHESTRATION</div>
+        <h2 class="section-heading">Six Specialized AI Agents Working Together</h2>
+        <p class="section-paragraph">
+          Our multi-agent swarm operates in parallel around the Schwarzschild AI Core, communicating and synchronizing parameters to solve industrial bottlenecks. Click an agent circle to inspect its core instructions.
+        </p>
+        
+        <!-- Floating details card - nested inside split-left for high contrast and readability -->
+        <div class="agent-info-card" id="agent-info-card">
+          <div class="card-badge" id="agent-card-badge">AGENT PROFILE</div>
+          <h3 class="card-title" id="agent-card-title">Select an Agent</h3>
+          <p class="card-desc" id="agent-card-desc">Click any agent circle on the right to inspect its core operational mandate.</p>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="agent-orbit-container" id="agent-orbit-container">
+          <svg class="agent-orbit-svg" id="agent-orbit-svg"></svg>
+          
+          <div class="agent-circle" data-agent="planning">
+            <span>🧠</span>Planning
+          </div>
+          <div class="agent-circle" data-agent="knowledge">
+            <span>📂</span>Knowledge
+          </div>
+          <div class="agent-circle" data-agent="operations">
+            <span>⚙️</span>Operations
+          </div>
+          <div class="agent-circle" data-agent="maintenance">
+            <span>🔧</span>Maintenance
+          </div>
+          <div class="agent-circle" data-agent="analytics">
+            <span>📈</span>Analytics
+          </div>
+          <div class="agent-circle" data-agent="risk">
+            <span>🛡️</span>Risk
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: Key Features -->
+  <section class="glass-section" id="features">
+    <div class="section-container">
+      <div class="section-kicker">04 // PRODUCT CAPABILITIES</div>
+      <h2 class="section-heading">Architected for Industrial Scaling</h2>
+      
+      <div class="cards-grid">
+        <div class="glass-card animate-border">
+          <div class="card-icon">💬</div>
+          <h3 class="card-title">AI Chat</h3>
+          <p class="card-desc">Ask queries in plain English and retrieve instantly verified answers from operational documentation.</p>
+        </div>
+        <div class="glass-card animate-border">
+          <div class="card-icon">🔮</div>
+          <h3 class="card-title">Predictive Maintenance</h3>
+          <p class="card-desc">Detect subtle thermal and vibration anomalies days before components fail, preventing outages.</p>
+        </div>
+        <div class="glass-card animate-border">
+          <div class="card-icon">🎙️</div>
+          <h3 class="card-title">Voice Assistant</h3>
+          <p class="card-desc">Hands-free voice diagnostics on the factory floor, integrated with wearable field devices.</p>
+        </div>
+        <div class="glass-card animate-border">
+          <div class="card-icon">🔄</div>
+          <h3 class="card-title">Workflow Automation</h3>
+          <p class="card-desc">Draft maintenance tickets, dispatch alerts, and log repair actions automatically.</p>
+        </div>
+        <div class="glass-card animate-border">
+          <div class="card-icon">📄</div>
+          <h3 class="card-title">Document Intelligence</h3>
+          <p class="card-desc">Ingest schematics, piping diagrams (P&IDs), and historical shift logs into semantic vectors.</p>
+        </div>
+        <div class="glass-card animate-border">
+          <div class="card-icon">🔍</div>
+          <h3 class="card-title">Root Cause Analysis</h3>
+          <p class="card-desc">Trace anomaly cascades to their source, proposing structured repair recommendations.</p>
+        </div>
+        <div class="glass-card animate-border">
+          <div class="card-icon">🖥️</div>
+          <h3 class="card-title">Real-Time Monitoring</h3>
+          <p class="card-desc">Stream sub-millisecond process parameters to context-aware local agent loops.</p>
+        </div>
+        <div class="glass-card animate-border">
+          <div class="card-icon">🌐</div>
+          <h3 class="card-title">Digital Twin Ready</h3>
+          <p class="card-desc">Pre-mapped connections to major industrial standards like OPC UA and MQTT structures.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: Technology Stack -->
+  <section class="glass-section" id="tech-stack">
+    <div class="section-split">
+      <div class="split-left">
+        <div class="section-kicker">05 // ARCHITECTURE STACK</div>
+        <h2 class="section-heading">Built With Modern AI Infrastructure</h2>
+        <p class="section-paragraph">
+          Our codebase runs on optimized, open interfaces, binding leading language models and orchestration frameworks into a unified execution cluster.
+        </p>
+      </div>
+      <div class="split-right">
+        <div class="tech-orbit-container" id="tech-orbit-container">
+          <svg class="agent-orbit-svg" id="tech-orbit-svg"></svg>
+          
+          <div class="tech-icon" data-tech="gemini">
+            <span>♊</span>Gemini
+          </div>
+          <div class="tech-icon" data-tech="langgraph">
+            <span>🕸️</span>LangGraph
+          </div>
+          <div class="tech-icon" data-tech="fastapi">
+            <span>⚡</span>FastAPI
+          </div>
+          <div class="tech-icon" data-tech="python">
+            <span>🐍</span>Python
+          </div>
+          <div class="tech-icon" data-tech="supabase">
+            <span>⚡</span>Supabase
+          </div>
+          <div class="tech-icon" data-tech="docker">
+            <span>🐳</span>Docker
+          </div>
+          <div class="tech-icon" data-tech="postgres">
+            <span>🐘</span>Postgres
+          </div>
+          <div class="tech-icon" data-tech="threejs">
+            <span>📐</span>Three.js
+          </div>
+          <div class="tech-icon" data-tech="tailwind">
+            <span>🎨</span>Tailwind
+          </div>
+          <div class="tech-icon" data-tech="react">
+            <span>⚛️</span>React
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7: Interactive Demo -->
+  <section class="glass-section" id="interactive-demo">
+    <div class="section-container">
+      <div class="section-kicker">06 // INTERACTIVE FLOW</div>
+      <h2 class="section-heading">How AegisAI Works</h2>
+      <p class="section-paragraph">
+        Trace the path of an operator request as it traverses the multi-agent reasoning layers. Hover over steps to inspect.
+      </p>
+      
+      <div class="workflow-scroll-container">
+        <div class="workflow-flex">
+          <div class="workflow-step">
+            <div class="workflow-step-icon">❓</div>
+            <h4 class="workflow-step-title">User Question</h4>
+            <p class="workflow-step-desc">"Why did Pump 3 pressure drop?"</p>
+          </div>
+          <div class="workflow-connector"></div>
+          <div class="workflow-step">
+            <div class="workflow-step-icon">📋</div>
+            <h4 class="workflow-step-title">Planner Agent</h4>
+            <p class="workflow-step-desc">Decomposes request and outlines research goals.</p>
+          </div>
+          <div class="workflow-connector"></div>
+          <div class="workflow-step">
+            <div class="workflow-step-icon">🔍</div>
+            <h4 class="workflow-step-title">Retrieval</h4>
+            <p class="workflow-step-desc">Searches manuals and telemetry databases.</p>
+          </div>
+          <div class="workflow-connector"></div>
+          <div class="workflow-step">
+            <div class="workflow-step-icon">🧠</div>
+            <h4 class="workflow-step-title">Reasoning</h4>
+            <p class="workflow-step-desc">Correlates pressure with cavitation patterns.</p>
+          </div>
+          <div class="workflow-connector"></div>
+          <div class="workflow-step">
+            <div class="workflow-step-icon">🛠️</div>
+            <h4 class="workflow-step-title">AI Agents</h4>
+            <p class="workflow-step-desc">Risk and Maintenance agents draft mitigations.</p>
+          </div>
+          <div class="workflow-connector"></div>
+          <div class="workflow-step">
+            <div class="workflow-step-icon">✅</div>
+            <h4 class="workflow-step-title">Validation</h4>
+            <p class="workflow-step-desc">Confirms proposal matches plant safety bounds.</p>
+          </div>
+          <div class="workflow-connector"></div>
+          <div class="workflow-step">
+            <div class="workflow-step-icon">💬</div>
+            <h4 class="workflow-step-title">Final Answer</h4>
+            <p class="workflow-step-desc">Delivers precise step-by-step resolution logs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8: Expected Impact -->
+  <section class="glass-section" id="impact">
+    <div class="section-container">
+      <div class="section-kicker">07 // VALUE GENERATION</div>
+      <h2 class="section-heading">Expected Impact</h2>
+      
+      <div class="metrics-grid">
+        <div class="glass-card metric-card">
+          <div class="metric-val" data-target="40">0%</div>
+          <div class="metric-label">Less Downtime</div>
+        </div>
+        <div class="glass-card metric-card">
+          <div class="metric-val" data-target="35">0%</div>
+          <div class="metric-label">Lower Maintenance Cost</div>
+        </div>
+        <div class="glass-card metric-card">
+          <div class="metric-val" data-target="90">0%</div>
+          <div class="metric-label">Decision Accuracy</div>
+        </div>
+        <div class="glass-card metric-card" style="grid-column: span 1.5;">
+          <div class="metric-val" data-target="50">0%</div>
+          <div class="metric-label">Faster Reports</div>
+        </div>
+        <div class="glass-card metric-card" style="grid-column: span 1.5;">
+          <div class="metric-val" data-target="25">0%</div>
+          <div class="metric-label">Higher Productivity</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 9: Future Vision -->
+  <section class="glass-section" id="future">
+    <div class="section-split">
+      <div class="split-left">
+        <div class="section-kicker">08 // THE ROAD AHEAD</div>
+        <h2 class="section-heading">The Future Is Autonomous</h2>
+        <p class="section-paragraph">
+          As the AI Core expands, it links virtual intelligence with physical agency, weaving factories, digital twins, and automation nodes into a self-healing industrial swarm.
+        </p>
+      </div>
+      <div class="split-right">
+        <div class="future-vision-layout">
+          <!-- Center holds the expanded black hole (canvas background) -->
+          <div class="future-node" id="future-node-1">Digital Twins</div>
+          <div class="future-node" id="future-node-2">Factories</div>
+          <div class="future-node" id="future-node-3">Robots</div>
+          <div class="future-node" id="future-node-4">IoT Networks</div>
+          <div class="future-node" id="future-node-5">Autonomous Vehicles</div>
+          <div class="future-node" id="future-node-6">Smart Cities</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- SECTION 11: Timeline -->
+  <section class="glass-section" id="timeline">
+    <div class="section-container">
+      <div class="section-kicker">10 // ROADMAP</div>
+      <h2 class="section-heading">Product Timeline</h2>
+      
+      <div class="roadmap-container">
+        <div class="roadmap-line">
+          <div class="roadmap-progress" id="roadmap-progress"></div>
+        </div>
+        
+        <div class="roadmap-milestone active" data-index="1">
+          1
+          <div class="milestone-label">Idea</div>
+        </div>
+        <div class="roadmap-milestone" data-index="2">
+          2
+          <div class="milestone-label">Research</div>
+        </div>
+        <div class="roadmap-milestone" data-index="3">
+          3
+          <div class="milestone-label">Prototype</div>
+        </div>
+        <div class="roadmap-milestone" data-index="4">
+          4
+          <div class="milestone-label">Hackathon</div>
+        </div>
+        <div class="roadmap-milestone" data-index="5">
+          5
+          <div class="milestone-label">Deployment</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 12: Footer -->
+  <footer class="aegis-footer" id="footer">
+    <div class="footer-container" style="flex-direction: column; gap: 30px; text-align: center; max-width: 800px; margin: 0 auto;">
+      <a href="#" class="nav-logo" style="font-size: 40px; font-weight: 800;">Aegis<span>AI</span></a>
+      <p class="hero-subtitle" style="margin: 0; font-size: 18px; color: var(--aegis-gray);">
+        Enterprise Multi-Agent AI Copilot // Tech Horizon 2.0
+      </p>
+      
+      <div class="footer-btn-wrap">
+        <a href="https://github.com" target="_blank" class="btn btn-github">GitHub</a>
+        <a href="#" class="btn btn-secondary">Documentation</a>
+        <a href="#" class="btn btn-primary">Live Demo</a>
+        <a href="mailto:contact@aegis.ai" class="btn btn-secondary">Email</a>
+        <a href="https://linkedin.com" target="_blank" class="btn btn-secondary">LinkedIn</a>
+      </div>
+      
+      <div class="footer-links" style="margin-top: 40px;">
+        <a href="#" id="btnToggleDiag">⚙ SHOW DIAGNOSTICS</a>
+        <span>|</span>
+        <span>AegisAI © 2026. Relativistic Core licensed under Schwarzschild Metric.</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- Diagnostics Panel (Holds the original GARGANTUA UI controls, toggled by footer link) -->
+<div id="diagnostics-panel" class="expert-hidden">
+  
+  <!-- Original GARGANTUA HUD -->
+  <div id="hud">
+    <div class="corner tl" aria-hidden="true"></div>
+    <div class="corner tr" aria-hidden="true"></div>
+    <div class="corner bl" aria-hidden="true"></div>
+    <div class="corner br" aria-hidden="true"></div>
+
+    <header class="title-block">
+      <h1 class="title">GARGANTUA</h1>
+      <div class="subtitle">SUPERMASSIVE BLACK HOLE · 1.0 × 10⁸ M☉</div>
+      <div class="tag">SCHWARZSCHILD METRIC // NULL-GEODESIC RAYTRACING</div>
+    </header>
+
+    <div class="mission">
+      <div class="mission-label">MISSION ELAPSED</div>
+      <div class="mission-clock" id="mClock">00:00:00</div>
+    </div>
+
+    <div class="telemetry" role="status" aria-label="Observer telemetry">
+      <div class="trow"><span class="tlabel">OBSERVER DISTANCE</span><span class="tval" id="tDist">—</span></div>
+      <div class="trow"><span class="tlabel">DISK INCLINATION</span><span class="tval" id="tIncl">—</span></div>
+      <div class="trow"><span class="tlabel">GEODESIC STEPS</span><span class="tval" id="tSteps">—</span></div>
+      <div class="trow"><span class="tlabel">RENDER PROFILE</span><span class="tval" id="tProfile">—</span></div>
+      <div class="trow"><span class="tlabel">FRAME RATE</span><span class="tval" id="tFps">—</span></div>
+    </div>
+
+    <div id="toast" role="alert"></div>
+
+    <nav class="deck" id="deck" aria-label="Flight deck">
+      <div class="deck-title" id="deckTitle">CINEMATIC SEQUENCE</div>
+      <button class="btn wide active" id="btnCine" aria-pressed="true">CINEMATIC</button>
+      <div class="grid2">
+        <button class="btn" data-preset="poster">POSTER</button>
+        <button class="btn" data-preset="edge">EDGE</button>
+        <button class="btn" data-preset="polar">POLAR</button>
+        <button class="btn" data-preset="close">CLOSE</button>
+      </div>
+      <div class="grid4">
+        <button class="btn" id="btnAuto" aria-pressed="false">AUTO</button>
+        <button class="btn" id="btnQuality">CINEMATIC</button>
+        <button class="btn" id="btnParams" aria-pressed="false">PARAMS</button>
+        <button class="btn active" id="btnHud" aria-pressed="true">HUD</button>
+      </div>
+      <button class="btn wide" id="btnSound" aria-pressed="false">🔇 SOUND: OFF</button>
+      <div class="deck-hint">1-4 VIEWS · C CINE · R ORBIT · P PARAMS · M SOUND · H HUD</div>
+    </nav>
+
+    <div id="hint" aria-hidden="true">DRAG ORBIT · SCROLL/PINCH ZOOM · C CINEMATIC · M SOUND · 1-4 VIEWS · P PARAMS · H HUD</div>
+  </div>
+
+  <!-- Original GARGANTUA parameters panel -->
+  <div id="params" class="hidden" role="dialog" aria-label="Raytracing parameters">
+    <div class="params-head">
+      <span>PARAMETERS</span>
+      <button class="btn" id="btnReset">RESET</button>
+    </div>
+    <div class="params-body" id="paramsBody"></div>
+  </div>
+
+</div>
+
+<!-- Original GARGANTUA Intro Card (remains functional as background loader) -->
+<div id="intro" aria-hidden="true">
+  <div class="intro-card">
+    <div class="intro-kicker">REAL-TIME RELATIVISTIC RAYTRACING</div>
+    <div class="intro-title">AEGIS // CORE</div>
+    <div class="intro-quote">“Do not go gentle into that good night.”</div>
+  </div>
+</div>
+
+<!-- Original GARGANTUA Fatal Error Overlay -->
+<div id="fatal" hidden>
+  <div class="fatal-card" role="alertdialog" aria-labelledby="fatalTitle">
+    <div class="fatal-kicker">MISSION ANOMALY</div>
+    <div class="fatal-title" id="fatalTitle">SIGNAL LOST</div>
+    <div class="fatal-msg" id="fatalMsg"></div>
+    <div class="fatal-actions">
+      <button class="btn" id="fatalRetry">REINITIALISE</button>
+      <button class="btn" id="fatalLower">LOWER QUALITY</button>
+    </div>
+  </div>
+</div>
+
+<!-- Core application logic -->
+<script type="module" src="js/main.js?v=8"></script>
+
+</body>
+</html>
