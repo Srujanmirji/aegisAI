@@ -15,13 +15,14 @@ const STORE_KEY = 'gargantua.params.v1';
 const LOOP_SECONDS = 176;            // main score length; 2 x 88 s camera loops
 
 const QUALITY = {
+  mobile:    { label: 'MOBILE',    steps: 100, dpr: 0.75 },
   standard:  { label: 'STANDARD',  steps: 200, dpr: 1.0 },
   high:      { label: 'HIGH',      steps: 320, dpr: 1.5 },
   cinematic: { label: 'CINEMATIC', steps: 460, dpr: 2.0 },
 };
-const QUALITY_ORDER = ['standard', 'high', 'cinematic'];
+const QUALITY_ORDER = ['mobile', 'standard', 'high', 'cinematic'];
 // drawing-buffer pixel budgets per profile (DPR never persisted)
-const PIXEL_BUDGET = { standard: 1.4e6, high: 2.4e6, cinematic: 3.8e6 };
+const PIXEL_BUDGET = { mobile: 0.6e6, standard: 1.4e6, high: 2.4e6, cinematic: 3.8e6 };
 
 const PRESETS = {
   poster: { r: 24, inc: 38, az: 30  },
@@ -64,6 +65,23 @@ const PARAM_DEFS = [
 const qs = new URLSearchParams(location.search);
 const reducedMotion = window.matchMedia
   && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+
+// Caching and IntersectionObserver states for performance
+let isArchVisible = false;
+let isFutureVisible = false;
+let isAgentVisible = false;
+let isTechVisible = false;
+
+let archTop = 0, archHeight = 0;
+let futureTop = 0, futureHeight = 0;
+let maxScroll = 0;
+
+let agentContainerWidth = 0, agentContainerHeight = 0;
+let techContainerWidth = 0, techContainerHeight = 0;
+
+let cachedAgentCircles = [];
+let cachedTechIcons = [];
 
 const S = {
   params: {},
@@ -93,10 +111,10 @@ const S = {
   overrides: new Set(),
 };
 
-// quality from URL: none -> CINEMATIC, invalid -> HIGH
+// quality from URL: none -> MOBILE (if mobile device) or CINEMATIC, invalid -> HIGH
 (function initQuality(){
   const q = (qs.get('q') || '').toLowerCase();
-  if(!q) S.quality = 'cinematic';
+  if(!q) S.quality = isMobileDevice ? 'mobile' : 'cinematic';
   else if(QUALITY[q]) S.quality = q;
   else S.quality = 'high';
 })();
@@ -364,8 +382,8 @@ const audioMain = document.createElement('audio');
   else if(can('audio/ogg; codecs="vorbis"')) src = 'audio/gargantua-main.ogg';
   audioIntro.src = 'audio/gargantua-intro.mp3';
   audioMain.src = src;
-  audioIntro.preload = 'auto';
-  audioMain.preload = 'auto';
+  audioIntro.preload = isMobileDevice ? 'none' : 'auto';
+  audioMain.preload = isMobileDevice ? 'none' : 'auto';
   audioMain.loop = true;
   audioIntro.volume = 0.85;
   audioMain.volume = 0.85;
@@ -439,11 +457,17 @@ function toggleSound(){
     const introVisible = !document.body.classList.contains('ready');
     if(introVisible){
       try {
+        if (isMobileDevice) {
+          audioIntro.load();
+        }
         audioIntro.currentTime = 0;
         const p = audioIntro.play();
         if(p && p.catch) p.catch(audioBlocked);
       } catch(e){ audioBlocked(e); }
     }else{
+      if (isMobileDevice) {
+        audioMain.load();
+      }
       if(S.cineMode) seekMain(S.cineTime);
       playMain(true);
     }
@@ -618,6 +642,82 @@ function resetParams(){
   notify('PARAMETERS RESET TO DEFAULTS');
 }
 
+function updateLayoutMetrics() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  maxScroll = Math.max(0, document.documentElement.scrollHeight - h);
+
+  const archSec = document.getElementById('architecture');
+  if (archSec) {
+    const rect = archSec.getBoundingClientRect();
+    archTop = rect.top + window.scrollY;
+    archHeight = rect.height;
+  }
+  const futureSec = document.getElementById('future');
+  if (futureSec) {
+    const rect = futureSec.getBoundingClientRect();
+    futureTop = rect.top + window.scrollY;
+    futureHeight = rect.height;
+  }
+
+  const agentContainer = document.getElementById('agent-orbit-container');
+  if (agentContainer) {
+    agentContainerWidth = agentContainer.offsetWidth;
+    agentContainerHeight = agentContainer.offsetHeight;
+  }
+  const techContainer = document.getElementById('tech-orbit-container');
+  if (techContainer) {
+    techContainerWidth = techContainer.offsetWidth;
+    techContainerHeight = techContainer.offsetHeight;
+  }
+}
+
+function cacheDOMElements() {
+  const agentContainer = document.getElementById('agent-orbit-container');
+  if (agentContainer) {
+    cachedAgentCircles = Array.from(agentContainer.querySelectorAll('.agent-circle'));
+  }
+  const techContainer = document.getElementById('tech-orbit-container');
+  if (techContainer) {
+    cachedTechIcons = Array.from(techContainer.querySelectorAll('.tech-icon'));
+  }
+}
+
+function initVisibilityObservers() {
+  if ('IntersectionObserver' in window) {
+    const observerOptions = { root: null, rootMargin: '150px', threshold: 0 };
+
+    const archObserver = new IntersectionObserver((entries) => {
+      isArchVisible = entries[0].isIntersecting;
+    }, observerOptions);
+    const archEl = document.getElementById('architecture');
+    if (archEl) archObserver.observe(archEl);
+
+    const futureObserver = new IntersectionObserver((entries) => {
+      isFutureVisible = entries[0].isIntersecting;
+    }, observerOptions);
+    const futureEl = document.getElementById('future');
+    if (futureEl) futureObserver.observe(futureEl);
+
+    const agentObserver = new IntersectionObserver((entries) => {
+      isAgentVisible = entries[0].isIntersecting;
+    }, observerOptions);
+    const agentEl = document.getElementById('agents');
+    if (agentEl) agentObserver.observe(agentEl);
+
+    const techObserver = new IntersectionObserver((entries) => {
+      isTechVisible = entries[0].isIntersecting;
+    }, observerOptions);
+    const techEl = document.getElementById('tech-stack');
+    if (techEl) techObserver.observe(techEl);
+  } else {
+    isArchVisible = true;
+    isFutureVisible = true;
+    isAgentVisible = true;
+    isTechVisible = true;
+  }
+}
+
 /* ================================================================== quality */
 const _dbSize = new THREE.Vector2();
 function resize(){
@@ -649,6 +749,7 @@ function resize(){
   }
   
   layoutParams();
+  updateLayoutMetrics();
 }
 function setQuality(q){
   if(!QUALITY[q]) return;
@@ -766,7 +867,6 @@ function frame(){
 
   // Scroll-driven zoom & core uniform adjustments
   let scrollProgress = 0;
-  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
   if (maxScroll > 0) {
     scrollProgress = window.scrollY / maxScroll;
   }
@@ -785,35 +885,27 @@ function frame(){
 
   // 3. Section-specific interactive core modulation:
   // Solution (Architecture) Section - increase brightness uDiskBright
-  const archSec = document.getElementById('architecture');
-  if (archSec) {
-    const r = archSec.getBoundingClientRect();
-    const isVisible = r.top < window.innerHeight && r.bottom > 0;
-    if (isVisible) {
-      const pct = Math.max(0, Math.min(1, (window.innerHeight - r.top) / (window.innerHeight + r.height)));
-      const glowAmt = Math.sin(pct * Math.PI) * 1.5;
-      uniforms.uDiskBright.value = S.params.uDiskBright + glowAmt;
-      if (bloomPass) bloomPass.strength += glowAmt * 0.5;
-    } else {
-      uniforms.uDiskBright.value = S.params.uDiskBright;
-    }
+  if (isArchVisible && archHeight > 0) {
+    const relativeTop = archTop - window.scrollY;
+    const pct = Math.max(0, Math.min(1, (window.innerHeight - relativeTop) / (window.innerHeight + archHeight)));
+    const glowAmt = Math.sin(pct * Math.PI) * 1.5;
+    uniforms.uDiskBright.value = S.params.uDiskBright + glowAmt;
+    if (bloomPass) bloomPass.strength += glowAmt * 0.5;
+  } else {
+    uniforms.uDiskBright.value = S.params.uDiskBright;
   }
 
   // Future Vision Section - expand disk uDin/uDout
-  const futureSec = document.getElementById('future');
-  if (futureSec) {
-    const r = futureSec.getBoundingClientRect();
-    const isVisible = r.top < window.innerHeight && r.bottom > 0;
-    if (isVisible) {
-      const pct = Math.max(0, Math.min(1, (window.innerHeight - r.top) / (window.innerHeight + r.height)));
-      const expandAmt = Math.sin(pct * Math.PI);
-      uniforms.uDout.value = S.params.uDout + expandAmt * 15.0;
-      uniforms.uDin.value = S.params.uDin + expandAmt * 0.8;
-      camera.position.multiplyScalar(1.0 - expandAmt * 0.15);
-    } else {
-      uniforms.uDout.value = S.params.uDout;
-      uniforms.uDin.value = S.params.uDin;
-    }
+  if (isFutureVisible && futureHeight > 0) {
+    const relativeTop = futureTop - window.scrollY;
+    const pct = Math.max(0, Math.min(1, (window.innerHeight - relativeTop) / (window.innerHeight + futureHeight)));
+    const expandAmt = Math.sin(pct * Math.PI);
+    uniforms.uDout.value = S.params.uDout + expandAmt * 15.0;
+    uniforms.uDin.value = S.params.uDin + expandAmt * 0.8;
+    camera.position.multiplyScalar(1.0 - expandAmt * 0.15);
+  } else {
+    uniforms.uDout.value = S.params.uDout;
+    uniforms.uDin.value = S.params.uDin;
   }
 
   // 4. Update orbiting nodes (agents and tech stack icons)
@@ -821,16 +913,14 @@ function frame(){
   techAngle -= dt * 0.12;
 
   // Update Agent Circles Orbit positions
-  const agentContainer = document.getElementById('agent-orbit-container');
-  if (agentContainer) {
-    const circles = agentContainer.querySelectorAll('.agent-circle');
-    const cx = agentContainer.offsetWidth / 2;
-    const cy = agentContainer.offsetHeight / 2;
+  if (isAgentVisible && cachedAgentCircles.length > 0) {
+    const cx = agentContainerWidth / 2;
+    const cy = agentContainerHeight / 2;
     const isMobile = window.innerWidth <= 768;
     const radius = isMobile ? 120 : 160;
     const halfWidth = isMobile ? 45 : 50; // Mobile circle is 90px, desktop is 100px
 
-    circles.forEach((circle, i) => {
+    cachedAgentCircles.forEach((circle, i) => {
       const angle = agentAngle + i * (Math.PI * 2 / 6);
       const x = cx + Math.cos(angle) * radius - halfWidth;
       const y = cy + Math.sin(angle) * radius - halfWidth;
@@ -839,20 +929,18 @@ function frame(){
   }
 
   // Update Tech Icons Orbit positions
-  const techContainer = document.getElementById('tech-orbit-container');
-  if (techContainer) {
-    const icons = techContainer.querySelectorAll('.tech-icon');
-    const cx = techContainer.offsetWidth / 2;
-    const cy = techContainer.offsetHeight / 2;
+  if (isTechVisible && cachedTechIcons.length > 0) {
+    const cx = techContainerWidth / 2;
+    const cy = techContainerHeight / 2;
     const isMobile = window.innerWidth <= 768;
     const rOuter = isMobile ? 150 : 210;
     const rInner = isMobile ? 90 : 130;
     const halfWidth = isMobile ? 30 : 38; // Mobile tech icon is 60px, desktop is 76px
 
-    icons.forEach((icon, i) => {
+    cachedTechIcons.forEach((icon, i) => {
       const isOuter = i % 2 === 0;
       const radius = isOuter ? rOuter : rInner;
-      const angle = techAngle + (i / icons.length) * Math.PI * 2;
+      const angle = techAngle + (i / cachedTechIcons.length) * Math.PI * 2;
       const x = cx + Math.cos(angle) * radius - halfWidth;
       const y = cy + Math.sin(angle) * radius - halfWidth;
       icon.style.transform = `translate3d(${x}px, ${y}px, 0)`;
@@ -975,7 +1063,7 @@ function bindUI(){
     } else {
       navbar.classList.remove('scrolled');
     }
-  });
+  }, { passive: true });
 
   // Diagnostics Panel toggle
   const diagBtn = $('btnToggleDiag');
@@ -1011,7 +1099,7 @@ function bindUI(){
 
   // Custom cursor logic
   const cursor = $('custom-cursor');
-  if (cursor) {
+  if (cursor && !isMobileDevice) {
     window.addEventListener('mousemove', (e) => {
       cursor.style.left = e.clientX + 'px';
       cursor.style.top = e.clientY + 'px';
@@ -1112,25 +1200,28 @@ function initScrollExperience() {
   // Register ScrollTrigger plugin
   gsap.registerPlugin(ScrollTrigger);
 
-  // Initialize Lenis smooth scroll
-  const lenis = new Lenis({
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    smoothWheel: true,
-  });
+  // Initialize Lenis smooth scroll only on desktop
+  let lenis;
+  if (!isMobileDevice) {
+    lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
 
-  function raf(time) {
-    lenis.raf(time);
+    function raf(time) {
+      if (lenis) lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
     requestAnimationFrame(raf);
-  }
-  requestAnimationFrame(raf);
 
-  // Synchronize ScrollTrigger with Lenis
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
-  });
-  gsap.ticker.lagSmoothing(0);
+    // Synchronize ScrollTrigger with Lenis
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+  }
 
   // Bind navbar active links to scroll sections
   const navLinks = document.querySelectorAll('.aegis-nav-link');
@@ -1141,7 +1232,12 @@ function initScrollExperience() {
         e.preventDefault();
         const targetEl = document.querySelector(targetId);
         if (targetEl) {
-          lenis.scrollTo(targetEl, { offset: -70 });
+          if (lenis) {
+            lenis.scrollTo(targetEl, { offset: -70 });
+          } else {
+            const targetY = targetEl.getBoundingClientRect().top + window.scrollY - 70;
+            window.scrollTo({ top: targetY, behavior: 'smooth' });
+          }
           navLinks.forEach(l => l.classList.remove('active'));
           link.classList.add('active');
         }
@@ -1509,6 +1605,9 @@ function initTimelineHighlight() {
 }
 
 (function boot(){
+  cacheDOMElements();
+  initVisibilityObservers();
+  updateLayoutMetrics();
   buildParams();
   applyAllParams();
   bindUI();
