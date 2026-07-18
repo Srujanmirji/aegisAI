@@ -21,24 +21,24 @@ The following diagram illustrates the flow of control and telemetry from enterpr
 ```mermaid
 graph TD
     subgraph Data Layer
-        A[Enterprise Repositories] -->|Data Stream| B[(Vector DB / Supabase)]
+        A["Enterprise Repositories"] -->|Data Stream| B["Vector DB / Supabase"]
     end
 
     subgraph AegisAI Cognitive Swarm
-        B -->|Context Feed| C[Knowledge Agent]
-        D[Planning Agent] -->|Task Decomposition| C
-        D -->|Executes Workflow| E[Operations Agent]
-        F[Maintenance Agent] -->|Telemetry Diagnostics| G[Analytics Agent]
-        H[Risk Agent] -->|Audits Code & Access| D
+        B -->|Context Feed| C["Knowledge Agent"]
+        D["Planning Agent"] -->|Task Decomposition| C
+        D -->|Executes Workflow| E["Operations Agent"]
+        F["Maintenance Agent"] -->|Telemetry Diagnostics| G["Analytics Agent"]
+        H["Risk Agent"] -->|Audits Code & Access| D
     end
 
     subgraph Relativistic AI Core
-        I[Schwarzschild WebGL Shader] -->|State Modulation| J[Disk Brightness & Expansion]
+        I["Schwarzschild WebGL Shader"] -->|State Modulation| J["Disk Brightness & Expansion"]
         G -->|State Uniforms| I
     end
 
     subgraph Operator Console
-        E -->|Recommendations| K[Operator Control Dashboard]
+        E -->|Recommendations| K["Operator Control Dashboard"]
         K -->|Actions| D
     end
 
