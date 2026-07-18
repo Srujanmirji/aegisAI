@@ -36,6 +36,13 @@ body{
   z-index: 1;
 }
 
+@media (max-width: 1024px) {
+  #view {
+    pointer-events: none !important;
+    touch-action: auto !important;
+  }
+}
+
 /* ------------------------------------------------------- post decoration -- */
 #fx{
   position: fixed;
