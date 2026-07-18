@@ -71,21 +71,93 @@ AegisAI coordinates six parallel subagents orbiting the AI Core:
 
 ---
 
-## 🚀 Quickstart Development
+## 🚀 Local Development & Hosting Guide
 
-1.  **Initialize local HTTP server:**
-    Ensure you run the development server from the `gargantua` subdirectory:
-    ```bash
-    cd gargantua
-    python3 -m http.server 8123
-    ```
-2.  **View locally:**
-    Open your browser and navigate to:
-    ```
-    http://localhost:8123
-    ```
-3.  **Explore Diagnostics:**
-    Scroll to the footer and click `⚙ SHOW DIAGNOSTICS` to open the telemetry controls panel (mission clock, disk inclination, and render profiles).
+### Local Development Servers
+
+#### 1. Python HTTP Server (Built-in)
+Run the development server from the `gargantua/` directory:
+```bash
+cd gargantua
+python3 -m http.server 8123
+```
+Open `http://localhost:8123` in your browser.
+
+#### 2. VS Code Live Server (IDE Extension)
+- Open the project workspace folder in VS Code.
+- Right-click `gargantua/index.html` and select **Open with Live Server**.
+- It will boot automatically on port `5500`.
+
+---
+
+### Production Web Servers
+
+#### 3. Nginx Configuration
+Add the following server block configuration in `/etc/nginx/sites-available/aegisai`:
+```nginx
+server {
+    listen 80;
+    server_name aegisai.local;
+
+    root /var/www/aegisai/gargantua;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Cache static assets aggressively
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|mp3|opus)$ {
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+}
+```
+
+#### 4. Apache Configuration
+Create a `.htaccess` file inside the `gargantua/` folder:
+```apache
+DirectoryIndex index.html
+
+# Enable rewrite engine if doing custom routing
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
+```
+
+---
+
+### Cloud Platforms Deployment
+
+#### 5. Vercel Configuration (Automatic)
+The project includes a root [vercel.json](file:///Users/srujanmirji/Documents/GARGANTUA/vercel.json) file:
+```json
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/gargantua/$1" }
+  ]
+}
+```
+Simply connect your GitHub repository to Vercel and click **Deploy**. Vercel will rewrite all root traffic directly into `/gargantua` under the hood.
+
+#### 6. Netlify Configuration (Automatic)
+The project includes a root [netlify.toml](file:///Users/srujanmirji/Documents/GARGANTUA/netlify.toml) file:
+```toml
+[build]
+  base = "gargantua"
+  publish = "gargantua"
+```
+Connect your GitHub repository to Netlify; it will read this config and build the subfolder automatically.
+
+#### 7. GitHub Pages Configuration
+Deploy the contents of the `gargantua/` subdirectory to a separate `gh-pages` branch using the subtree push command in your terminal:
+```bash
+git subtree push --prefix gargantua origin gh-pages
+```
+Go to repository settings -> **Pages** -> Set branch to **`gh-pages`** to publish the site.
 
 ---
 
